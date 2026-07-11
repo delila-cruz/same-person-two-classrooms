@@ -1,0 +1,262 @@
+/* style.css
+   Single source of truth for all visual styling.
+   Palette, type, and layout rules are shared identically by both panels —
+   per docs/spec.md > Visual Design System, nothing about how the two sides
+   *look* may distinguish them; only their content does.
+*/
+
+/* ---- design tokens --------------------------------------------------- */
+
+:root {
+  --color-bg: #FBF3E8;       /* cream */
+  --color-ink: #3A2E22;      /* warm ink (text) */
+  --color-accent: #C97C4B;   /* amber (buttons/highlights) */
+  --color-locked-red: #B23A3A;
+  --color-separator: rgba(58, 46, 34, 0.3);
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+/* ---- reset / base ------------------------------------------------------ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+#stage {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 3rem 1.5rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- single centered block (title, narration, climaxSetup) ------------ */
+
+.single-block {
+  max-width: 38rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.single-block p {
+  text-align: left;
+}
+
+/* Title screen gets a bit more presence, since it's the first thing seen —
+   still simple/functional per the PRD, not elaborate. */
+.single-block h1 {
+  font-size: 2.25rem;
+  font-weight: normal;
+  line-height: 1.25;
+  margin: 0 0 0.5em;
+  letter-spacing: 0.01em;
+}
+
+.single-block h2 {
+  font-size: 1.125rem;
+  font-weight: normal;
+  font-style: italic;
+  color: var(--color-ink);
+  opacity: 0.75;
+  margin: 0 0 2em;
+}
+
+/* ---- two-panel grid ----------------------------------------------------- */
+
+.two-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 3rem;
+  position: relative;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+/* Single thin separator — the only visual marker that there are two
+   panels. No color/density/typography distinction on either side of it. */
+.two-panel-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--color-separator);
+}
+
+/* .panel--left and .panel--right intentionally share every rule below —
+   do not add side-specific overrides. */
+.panel {
+  padding: 0 1.5rem;
+  line-height: 1.7;
+}
+
+.panel p {
+  margin: 0 0 1em;
+}
+
+/* ---- round heading (multiRoundLockedChoice) ----------------------------- */
+
+.round-heading {
+  max-width: 60rem;
+  margin: 0 auto 1.5rem;
+  padding: 0 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+  opacity: 0.65;
+}
+
+/* ---- options / choice buttons -------------------------------------------- */
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 1.25rem 0;
+}
+
+.option {
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--color-ink);
+  background: transparent;
+  border: 1px solid var(--color-ink);
+  border-radius: 0;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.option:hover:not(:disabled):not(.option--locked) {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.option:disabled:not(.option--locked) {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Locked option: struck-through, dimmed, and flashes red on hover — the
+   mechanic's visual language, identical on both sides. */
+.option--locked {
+  text-decoration: line-through;
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.option--locked:hover {
+  background-color: var(--color-locked-red);
+  border-color: var(--color-locked-red);
+  color: #FBF3E8;
+  opacity: 0.85;
+}
+
+/* ---- outcome scene -------------------------------------------------------- */
+
+.outcome-label {
+  font-size: 1.75rem;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin: 0;
+}
+
+.end-text {
+  max-width: 60rem;
+  margin: 3rem auto 0;
+  text-align: center;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--color-ink);
+  opacity: 0;
+  animation: fade-in 1.2s ease forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 0.8; }
+}
+
+.start-over {
+  display: block;
+  margin: 2rem auto 0;
+}
+
+/* ---- buttons (general) ----------------------------------------------------- */
+
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding: 0.6rem 1.75rem;
+  margin-top: 1.75rem;
+  cursor: pointer;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+/* Buttons that live inside .options are choice options, not the primary
+   next/start action — they use .option's rules, not this default look. */
+.options button {
+  margin-top: 0;
+}
+
+button:hover:not(:disabled) {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Centers the primary next/start button under the single-block / grid
+   layouts, since it's appended as a sibling rather than inside them. */
+#stage > button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
