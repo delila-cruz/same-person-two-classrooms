@@ -7,7 +7,7 @@ export const SCENES = [
   {
     id: 'title',
     type: 'title',
-    title: 'Same Person, Two Classrooms',
+    title: 'Claim/Evidence/Reasoning',
     subtitle: 'a game about literacy',
   },
 
@@ -17,11 +17,11 @@ export const SCENES = [
     text:
       "What you're about to watch is one life, shown twice.\n\n" +
       "Same parents. Same house. Same report cards in every subject but one. Same body, " +
-      "years later, doing the same job, loving the same people, getting the same kind of tired.\n\n" +
+      "years later, doing the same job.\n\n" +
       "There is exactly one difference between the two of them, and it happens early: which " +
       "room they were sitting in at age nine when it was time to learn how to write a sentence " +
       "that means what it says.\n\n" +
-      "Everything else — watch for it — is identical.",
+      "Everything else is identical.",
   },
 
   {
@@ -45,7 +45,7 @@ export const SCENES = [
         "The lights go off. Somebody's phone glows two rows up. You copy the vocabulary words off " +
         "the board because that's what's due Monday, but no one asks you to use them in a sentence " +
         "that means something.\n\n" +
-        "You are not being punished. You are just not, quite, being taught.",
+        "You are not being punished. You are just not quite being taught.",
     },
     staggerDelayMs: 1500,
   },
@@ -115,7 +115,7 @@ export const SCENES = [
     type: 'multiRoundLockedChoice',
     rounds: [
       {
-        label: 'Opening the appeal',
+        label: 'Your Claim',
         leftOptions: [
           {
             text:
@@ -164,7 +164,7 @@ export const SCENES = [
         ],
       },
       {
-        label: 'Citing the denial reason',
+        label: 'Your Evidence',
         leftOptions: [
           {
             text:
@@ -215,7 +215,7 @@ export const SCENES = [
         ],
       },
       {
-        label: 'Closing the appeal',
+        label: 'Your Reasoning',
         leftOptions: [
           {
             text:
