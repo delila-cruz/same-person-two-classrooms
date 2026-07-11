@@ -45,6 +45,10 @@ export function renderScene(index) {
     renderMirroredNarrationScene(scene);
   } else if (scene.type === 'multiRoundLockedChoice') {
     renderMultiRoundLockedChoiceScene(scene);
+  } else if (scene.type === 'outcome') {
+    renderOutcomeScene(scene);
+  } else if (scene.type === 'closing') {
+    renderClosingScene(scene);
   } else {
     // Fail loudly rather than silently rendering a blank panel —
     // easier to catch during a fast build than a silent visual bug.
@@ -278,6 +282,68 @@ function renderMultiRoundLockedChoiceScene(scene) {
       maybeEnableNext();
     });
   }
+}
+
+// ---- outcome --------------------------------------------------------------
+
+/**
+ * Terminal scene: both sides' results (APPROVED / DENIED) render immediately
+ * as plain bold labels, side by side. No "Next" button — this is the last
+ * interactive beat in the game (per PRD, no further commentary follows the
+ * outcome). After `pauseMs` (default 2500ms), "end" fades in, followed by a
+ * "start over" button that restarts the whole game from scene 0.
+ */
+function renderOutcomeScene(scene) {
+  const pauseMs = scene.pauseMs ?? 2500;
+
+  const { grid, left, right } = createTwoPanelGrid();
+
+  const leftLabel = document.createElement('p');
+  leftLabel.className = 'outcome-label';
+  leftLabel.textContent = scene.leftLabel;
+  left.appendChild(leftLabel);
+
+  const rightLabel = document.createElement('p');
+  rightLabel.className = 'outcome-label';
+  rightLabel.textContent = scene.rightLabel;
+  right.appendChild(rightLabel);
+
+  stage.appendChild(grid);
+
+  // Deliberately no "Next" button is created here — this scene never
+  // advances the outer scene index on its own.
+
+  setTimeout(() => {
+    const endText = document.createElement('p');
+    endText.className = 'end-text';
+    endText.textContent = 'end';
+    stage.appendChild(endText);
+
+    const startOverButton = document.createElement('button');
+    startOverButton.type = 'button';
+    startOverButton.className = 'start-over';
+    startOverButton.textContent = 'start over';
+    startOverButton.addEventListener('click', () => {
+      // Per spec, a full page reload is an acceptable and equivalent way
+      // to reset currentSceneIndex to 0, since there's no other state to
+      // reset — simpler and more reliable than reaching into main.js.
+      location.reload();
+    });
+    stage.appendChild(startOverButton);
+  }, pauseMs);
+}
+
+// ---- closing ----------------------------------------------------------
+
+/**
+ * Safety-net terminal marker. In practice this scene is unreachable:
+ * `outcome` (the scene before it) has no "Next" button, so the scene
+ * machine never advances past climaxOutcome. Rendered as a no-op empty
+ * stage rather than inventing new narrative text, since the PRD forbids
+ * any commentary after the outcome.
+ */
+function renderClosingScene(_scene) {
+  // Intentionally blank — stage was already cleared by renderScene().
 }
 
 // ---- shared helpers -----------------------------------------------------
