@@ -104,7 +104,7 @@ export const SCENES = [
 
   {
     id: 'climaxSetup',
-    type: 'narration',
+    type: 'mirroredNarration',
     text:
       "Twenty years on. Same age, same week: a sharp pain that doesn't pass sends each of them " +
       "to the ER, then to a specialist, then to a procedure the specialist says can't wait.\n\n" +

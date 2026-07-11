@@ -15,12 +15,20 @@ function goToScene(index) {
 }
 
 function bindNext() {
-  onNextClick(() => {
-    if (currentSceneIndex < SCENES.length - 1) {
-      goToScene(currentSceneIndex + 1);
-    }
-  });
+  onNextClick(() => advanceScene());
 }
+
+function advanceScene() {
+  if (currentSceneIndex < SCENES.length - 1) {
+    goToScene(currentSceneIndex + 1);
+  }
+}
+
+// Exposed so scene types that manage their own internal state (e.g.
+// multiRoundLockedChoice cycling through rounds) can advance the outer
+// scene index themselves once their internal state machine completes,
+// without render.js needing to know about currentSceneIndex directly.
+export { advanceScene };
 
 // Initial render on page load.
 goToScene(currentSceneIndex);

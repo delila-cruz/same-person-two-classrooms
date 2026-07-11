@@ -5,6 +5,7 @@
 
 import { SCENES } from './scenes.js';
 import { renderOptions } from './lockedChoice.js';
+import { advanceScene } from './main.js';
 
 const stage = document.getElementById('stage');
 
@@ -40,6 +41,10 @@ export function renderScene(index) {
     renderStaggeredNarrationScene(scene);
   } else if (scene.type === 'lockedChoice') {
     renderLockedChoiceScene(scene);
+  } else if (scene.type === 'mirroredNarration') {
+    renderMirroredNarrationScene(scene);
+  } else if (scene.type === 'multiRoundLockedChoice') {
+    renderMultiRoundLockedChoiceScene(scene);
   } else {
     // Fail loudly rather than silently rendering a blank panel —
     // easier to catch during a fast build than a silent visual bug.
@@ -77,6 +82,25 @@ function renderNarrationScene(scene) {
   block.appendChild(createNextButton('Next'));
 
   stage.appendChild(block);
+}
+
+// ---- mirroredNarration --------------------------------------------------
+
+/**
+ * Two panels, identical text on both sides, no stagger — both appear at
+ * once. Used for beats where the point is sameness, not divergence
+ * (e.g. climaxSetup), unlike staggeredNarration which reveals the right
+ * panel late to dramatize a difference.
+ */
+function renderMirroredNarrationScene(scene) {
+  const { grid, left, right } = createTwoPanelGrid();
+
+  appendParagraphs(left, scene.text);
+  appendParagraphs(right, scene.text);
+
+  stage.appendChild(grid);
+  stage.appendChild(createNextButton('Next'));
+  setNextEnabled(true);
 }
 
 // ---- staggeredNarration -------------------------------------------------
@@ -154,6 +178,106 @@ function renderLockedChoiceScene(scene) {
     rightShown = true;
     maybeEnableNext();
   });
+}
+
+// ---- multiRoundLockedChoice ----------------------------------------------
+
+/**
+ * Cycles through `scene.rounds` (each shaped like { label, leftOptions,
+ * rightOptions }) inside a single scene, re-rendering fresh options into
+ * the same grid each round rather than advancing the outer scene index.
+ * Only after the final round's result renders does the "next" button
+ * advance to the next top-level scene — kept consistent with the rest of
+ * the app's gated next-button idiom rather than inventing a new pattern.
+ */
+function renderMultiRoundLockedChoiceScene(scene) {
+  let roundIndex = 0;
+
+  const heading = document.createElement('h3');
+  heading.className = 'round-heading';
+  stage.appendChild(heading);
+
+  const { grid, left, right } = createTwoPanelGrid();
+  stage.appendChild(grid);
+
+  const nextButton = createNextButton('Next round');
+  stage.appendChild(nextButton);
+  setNextEnabled(false);
+
+  renderRound(roundIndex);
+
+  function renderRound(idx) {
+    const round = scene.rounds[idx];
+    const isFinalRound = idx === scene.rounds.length - 1;
+
+    heading.textContent = `Round ${idx + 1}: ${round.label}`;
+
+    // Clear any leftover option buttons/results from the previous round
+    // before rendering fresh ones into the same panels.
+    left.innerHTML = '';
+    right.innerHTML = '';
+
+    const leftOptions = document.createElement('div');
+    leftOptions.className = 'options';
+    left.appendChild(leftOptions);
+
+    const rightOptions = document.createElement('div');
+    rightOptions.className = 'options';
+    right.appendChild(rightOptions);
+
+    setNextEnabled(false);
+
+    // main.js's bindNext() runs synchronously right after renderScene()
+    // returns (i.e. right after this whole scene function), and it is only
+    // called once per outer scene transition — not once per round. So every
+    // round (including the last) must explicitly rebind the button here;
+    // there's no later bindNext() call to "fall through to." We defer with
+    // a microtask purely so this bind wins the race against that one
+    // bindNext() call that happens right after the scene first mounts
+    // (click events are macrotasks and always queue behind microtasks).
+    Promise.resolve().then(() => {
+      onNextClick(() => {
+        if (isFinalRound) {
+          advanceScene();
+        } else {
+          roundIndex += 1;
+          renderRound(roundIndex);
+        }
+      });
+    });
+
+    // Each side's "good" option is its most specific/detailed option —
+    // by convention in this dataset, index 0 of that side's options for
+    // this round. Whether that option is actually pickable (unlocked)
+    // varies per round/side, which is exactly what makes the right side's
+    // disadvantage compound rather than following a fixed index.
+    const leftGoodText = round.leftOptions[0].text;
+    const rightGoodText = round.rightOptions[0].text;
+
+    let leftShown = false;
+    let rightShown = false;
+
+    function maybeEnableNext() {
+      if (leftShown && rightShown) {
+        setNextEnabled(true);
+        nextButton.textContent = isFinalRound ? 'Continue' : 'Next round';
+      }
+    }
+
+    renderOptions(leftOptions, round.leftOptions, (picked) => {
+      const resultText = picked.text === leftGoodText ? scene.resultGood : scene.resultWeak;
+      appendParagraphs(left, resultText);
+      leftShown = true;
+      maybeEnableNext();
+    });
+
+    renderOptions(rightOptions, round.rightOptions, (picked) => {
+      const resultText = picked.text === rightGoodText ? scene.resultGood : scene.resultWeak;
+      appendParagraphs(right, resultText);
+      rightShown = true;
+      maybeEnableNext();
+    });
+  }
 }
 
 // ---- shared helpers -----------------------------------------------------
