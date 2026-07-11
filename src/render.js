@@ -35,6 +35,8 @@ export function renderScene(index) {
     renderTitleScene(scene);
   } else if (scene.type === 'narration') {
     renderNarrationScene(scene);
+  } else if (scene.type === 'staggeredNarration') {
+    renderStaggeredNarrationScene(scene);
   } else {
     // Fail loudly rather than silently rendering a blank panel —
     // easier to catch during a fast build than a silent visual bug.
@@ -67,21 +69,54 @@ function renderNarrationScene(scene) {
   const block = document.createElement('div');
   block.className = 'single-block';
 
-  // scene.text uses "\n\n" for paragraph breaks — split into separate
-  // <p> tags so CSS doesn't just collapse raw newlines.
-  const paragraphs = scene.text.split('\n\n');
-  for (const paragraph of paragraphs) {
-    const p = document.createElement('p');
-    p.textContent = paragraph;
-    block.appendChild(p);
-  }
+  appendParagraphs(block, scene.text);
 
   block.appendChild(createNextButton('Next'));
 
   stage.appendChild(block);
 }
 
+// ---- staggeredNarration -------------------------------------------------
+
+function renderStaggeredNarrationScene(scene) {
+  const staggerDelayMs = scene.staggerDelayMs ?? 1500;
+
+  const { grid, left, right } = createTwoPanelGrid();
+
+  // Left panel renders immediately.
+  appendParagraphs(left, scene.left.text);
+
+  stage.appendChild(grid);
+  stage.appendChild(createNextButton('Next'));
+
+  // Right panel stays empty until the stagger delay elapses. Next is
+  // disabled until both panels have shown.
+  setNextEnabled(false);
+
+  let bothPanelsShown = false;
+
+  setTimeout(() => {
+    appendParagraphs(right, scene.right.text);
+    bothPanelsShown = true;
+    setNextEnabled(true);
+  }, staggerDelayMs);
+}
+
 // ---- shared helpers -----------------------------------------------------
+
+/**
+ * Splits text on "\n\n" (paragraph breaks) into separate <p> tags appended
+ * to `container`, so CSS doesn't just collapse raw newlines. Shared by any
+ * scene type that renders freeform narration text.
+ */
+function appendParagraphs(container, text) {
+  const paragraphs = text.split('\n\n');
+  for (const paragraph of paragraphs) {
+    const p = document.createElement('p');
+    p.textContent = paragraph;
+    container.appendChild(p);
+  }
+}
 
 /**
  * Helper for future scene types (staggeredNarration, lockedChoice, etc.)
