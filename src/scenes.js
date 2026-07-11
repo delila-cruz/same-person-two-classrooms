@@ -53,10 +53,10 @@ export const SCENES = [
   {
     id: 'beat2',
     type: 'lockedChoice',
+    prompt:
+      "Years later: the coffee maker finally gives out, mid-brew, on a Tuesday. You open the " +
+      "same AI shopping assistant everyone uses now and start typing.",
     left: {
-      prompt:
-        "Years later: the coffee maker finally gives out, mid-brew, on a Tuesday. You open the " +
-        "same AI shopping assistant everyone uses now and start typing.",
       options: [
         {
           text:
@@ -73,9 +73,6 @@ export const SCENES = [
       resultWeak: null,
     },
     right: {
-      prompt:
-        "Years later: the coffee maker finally gives out, mid-brew, on a Tuesday. You open the " +
-        "same AI shopping assistant everyone uses now and start typing.",
       options: [
         {
           text:
@@ -104,7 +101,7 @@ export const SCENES = [
 
   {
     id: 'climaxSetup',
-    type: 'mirroredNarration',
+    type: 'narration',
     text:
       "Twenty years on. Same age, same week: a sharp pain that doesn't pass sends each of them " +
       "to the ER, then to a specialist, then to a procedure the specialist says can't wait.\n\n" +

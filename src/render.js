@@ -41,8 +41,6 @@ export function renderScene(index) {
     renderStaggeredNarrationScene(scene);
   } else if (scene.type === 'lockedChoice') {
     renderLockedChoiceScene(scene);
-  } else if (scene.type === 'mirroredNarration') {
-    renderMirroredNarrationScene(scene);
   } else if (scene.type === 'multiRoundLockedChoice') {
     renderMultiRoundLockedChoiceScene(scene);
   } else if (scene.type === 'outcome') {
@@ -60,7 +58,7 @@ export function renderScene(index) {
 
 function renderTitleScene(scene) {
   const block = document.createElement('div');
-  block.className = 'single-block';
+  block.className = 'single-block title-block';
 
   const heading = document.createElement('h1');
   heading.textContent = scene.title;
@@ -86,25 +84,6 @@ function renderNarrationScene(scene) {
   block.appendChild(createNextButton('Next'));
 
   stage.appendChild(block);
-}
-
-// ---- mirroredNarration --------------------------------------------------
-
-/**
- * Two panels, identical text on both sides, no stagger — both appear at
- * once. Used for beats where the point is sameness, not divergence
- * (e.g. climaxSetup), unlike staggeredNarration which reveals the right
- * panel late to dramatize a difference.
- */
-function renderMirroredNarrationScene(scene) {
-  const { grid, left, right } = createTwoPanelGrid();
-
-  appendParagraphs(left, scene.text);
-  appendParagraphs(right, scene.text);
-
-  stage.appendChild(grid);
-  stage.appendChild(createNextButton('Next'));
-  setNextEnabled(true);
 }
 
 // ---- staggeredNarration -------------------------------------------------
@@ -136,14 +115,17 @@ function renderStaggeredNarrationScene(scene) {
 // ---- lockedChoice -------------------------------------------------------
 
 function renderLockedChoiceScene(scene) {
+  const promptBlock = document.createElement('div');
+  promptBlock.className = 'single-block shared-prompt';
+  appendParagraphs(promptBlock, scene.prompt);
+  stage.appendChild(promptBlock);
+
   const { grid, left, right } = createTwoPanelGrid();
 
-  appendParagraphs(left, scene.left.prompt);
   const leftOptions = document.createElement('div');
   leftOptions.className = 'options';
   left.appendChild(leftOptions);
 
-  appendParagraphs(right, scene.right.prompt);
   const rightOptions = document.createElement('div');
   rightOptions.className = 'options';
   right.appendChild(rightOptions);
@@ -171,14 +153,14 @@ function renderLockedChoiceScene(scene) {
 
   renderOptions(leftOptions, scene.left.options, (picked) => {
     const resultText = picked.text === leftGoodText ? scene.resultGood : scene.resultWeak;
-    appendParagraphs(left, resultText);
+    appendParagraphs(left, resultText, 'result');
     leftShown = true;
     maybeEnableNext();
   });
 
   renderOptions(rightOptions, scene.right.options, () => {
     // The only pickable option on the right is always the weaker one.
-    appendParagraphs(right, scene.resultWeak);
+    appendParagraphs(right, scene.resultWeak, 'result');
     rightShown = true;
     maybeEnableNext();
   });
@@ -270,14 +252,14 @@ function renderMultiRoundLockedChoiceScene(scene) {
 
     renderOptions(leftOptions, round.leftOptions, (picked) => {
       const resultText = picked.text === leftGoodText ? scene.resultGood : scene.resultWeak;
-      appendParagraphs(left, resultText);
+      appendParagraphs(left, resultText, 'result');
       leftShown = true;
       maybeEnableNext();
     });
 
     renderOptions(rightOptions, round.rightOptions, (picked) => {
       const resultText = picked.text === rightGoodText ? scene.resultGood : scene.resultWeak;
-      appendParagraphs(right, resultText);
+      appendParagraphs(right, resultText, 'result');
       rightShown = true;
       maybeEnableNext();
     });
@@ -352,12 +334,20 @@ function renderClosingScene(_scene) {
  * Splits text on "\n\n" (paragraph breaks) into separate <p> tags appended
  * to `container`, so CSS doesn't just collapse raw newlines. Shared by any
  * scene type that renders freeform narration text.
+ *
+ * `extraClassName` (optional) is added to every <p> produced — used to mark
+ * canned "result" text (e.g. the AI assistant's reply) as visually distinct
+ * from narration prose, since it reads as a quoted system artifact rather
+ * than the story's own voice.
  */
-function appendParagraphs(container, text) {
+function appendParagraphs(container, text, extraClassName) {
   const paragraphs = text.split('\n\n');
   for (const paragraph of paragraphs) {
     const p = document.createElement('p');
     p.textContent = paragraph;
+    if (extraClassName) {
+      p.classList.add(extraClassName);
+    }
     container.appendChild(p);
   }
 }
