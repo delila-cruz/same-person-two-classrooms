@@ -172,9 +172,12 @@ function renderLockedChoiceScene(scene) {
  * Cycles through `scene.rounds` (each shaped like { label, leftOptions,
  * rightOptions }) inside a single scene, re-rendering fresh options into
  * the same grid each round rather than advancing the outer scene index.
- * Only after the final round's result renders does the "next" button
- * advance to the next top-level scene — kept consistent with the rest of
- * the app's gated next-button idiom rather than inventing a new pattern.
+ * No interim result/feedback is shown after either side picks — once both
+ * sides have picked a valid (unlocked) option in the current round, the
+ * round's next button enables immediately. Only on the final round does
+ * that button advance the outer scene index (via `advanceScene()`) instead
+ * of moving to the next round — kept consistent with the rest of the app's
+ * gated next-button idiom rather than inventing a new pattern.
  */
 function renderMultiRoundLockedChoiceScene(scene) {
   let roundIndex = 0;
@@ -232,14 +235,10 @@ function renderMultiRoundLockedChoiceScene(scene) {
       });
     });
 
-    // Each side's "good" option is its most specific/detailed option —
-    // by convention in this dataset, index 0 of that side's options for
-    // this round. Whether that option is actually pickable (unlocked)
-    // varies per round/side, which is exactly what makes the right side's
-    // disadvantage compound rather than following a fixed index.
-    const leftGoodText = round.leftOptions[0].text;
-    const rightGoodText = round.rightOptions[0].text;
-
+    // No per-round result feedback is shown anymore — picking a valid
+    // option on a side just marks that side as "picked" (leftShown /
+    // rightShown), and once both sides have picked, the round's next
+    // button enables immediately with no interim reviewer response.
     let leftShown = false;
     let rightShown = false;
 
@@ -250,16 +249,12 @@ function renderMultiRoundLockedChoiceScene(scene) {
       }
     }
 
-    renderOptions(leftOptions, round.leftOptions, (picked) => {
-      const resultText = picked.text === leftGoodText ? scene.resultGood : scene.resultWeak;
-      appendParagraphs(left, resultText, 'result');
+    renderOptions(leftOptions, round.leftOptions, () => {
       leftShown = true;
       maybeEnableNext();
     });
 
-    renderOptions(rightOptions, round.rightOptions, (picked) => {
-      const resultText = picked.text === rightGoodText ? scene.resultGood : scene.resultWeak;
-      appendParagraphs(right, resultText, 'result');
+    renderOptions(rightOptions, round.rightOptions, () => {
       rightShown = true;
       maybeEnableNext();
     });
@@ -269,8 +264,11 @@ function renderMultiRoundLockedChoiceScene(scene) {
 // ---- outcome --------------------------------------------------------------
 
 /**
- * Terminal scene: both sides' results (APPROVED / DENIED) render immediately
- * as plain bold labels, side by side. No "Next" button — this is the last
+ * Terminal scene: both sides' final reviewer responses render immediately,
+ * side by side, using the same `.result` treatment as the reviewer-notes
+ * text used earlier in the piece — but this is the climactic reveal, so it
+ * carries extra visual weight (larger size, bolder weight) rather than the
+ * quieter mid-scene register. No "Next" button — this is the last
  * interactive beat in the game (per PRD, no further commentary follows the
  * outcome). After `pauseMs` (default 2500ms), "end" fades in, followed by a
  * "start over" button that restarts the whole game from scene 0.
@@ -280,15 +278,8 @@ function renderOutcomeScene(scene) {
 
   const { grid, left, right } = createTwoPanelGrid();
 
-  const leftLabel = document.createElement('p');
-  leftLabel.className = 'outcome-label';
-  leftLabel.textContent = scene.leftLabel;
-  left.appendChild(leftLabel);
-
-  const rightLabel = document.createElement('p');
-  rightLabel.className = 'outcome-label';
-  rightLabel.textContent = scene.rightLabel;
-  right.appendChild(rightLabel);
+  appendParagraphs(left, scene.leftResponse, 'result outcome-result');
+  appendParagraphs(right, scene.rightResponse, 'result outcome-result');
 
   stage.appendChild(grid);
 
@@ -346,7 +337,10 @@ function appendParagraphs(container, text, extraClassName) {
     const p = document.createElement('p');
     p.textContent = paragraph;
     if (extraClassName) {
-      p.classList.add(extraClassName);
+      // Support passing more than one space-separated class name (e.g.
+      // 'result outcome-result') in addition to the single-class case
+      // used elsewhere.
+      p.classList.add(...extraClassName.split(' '));
     }
     container.appendChild(p);
   }

@@ -227,14 +227,17 @@ p:last-child {
 
 /* ---- outcome scene -------------------------------------------------------- */
 
-.outcome-label {
-  font-size: 2rem;
-  font-weight: normal;
-  letter-spacing: 0.06em;
+/* The climactic reveal reuses .result's "quoted system artifact" framing
+   (border-top rule, italic) but is dialed up in weight/size — this is the
+   heaviest beat in the piece, not another quiet mid-scene aside. Overrides
+   .result's smaller/quieter register rather than replacing it wholesale. */
+.panel p.outcome-result {
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: bold;
+  opacity: 1;
   text-align: center;
-  margin: 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-rule);
+  letter-spacing: 0.01em;
 }
 
 .end-text {

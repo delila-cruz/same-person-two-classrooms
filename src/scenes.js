@@ -262,20 +262,18 @@ export const SCENES = [
         ],
       },
     ],
-    resultGood:
-      "The reviewer's notes: \"Appeal cites specific policy section and includes supporting " +
-      "physician documentation. Denial reason directly addressed. Recommend overturning original " +
-      "determination.\"",
-    resultWeak:
-      "The reviewer's notes: \"Appeal does not cite a specific policy provision or new clinical " +
-      "documentation beyond what was already reviewed. Original determination stands.\"",
   },
 
   {
     id: 'climaxOutcome',
     type: 'outcome',
-    leftLabel: 'APPROVED',
-    rightLabel: 'DENIED',
+    leftResponse:
+      "The reviewer's notes: \"Appeal cites specific policy section and includes supporting " +
+      "physician documentation. Denial reason directly addressed. Recommend overturning original " +
+      "determination.\"",
+    rightResponse:
+      "The reviewer's notes: \"Appeal does not cite a specific policy provision or new clinical " +
+      "documentation beyond what was already reviewed. Original determination stands.\"",
     pauseMs: 2500,
   },
 

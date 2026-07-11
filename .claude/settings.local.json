@@ -19,7 +19,8 @@
       "Bash(mkdir -p /Users/delilacruz/Hackathon/.claude && cat /Users/delilacruz/Hackathon/.claude/launch.json 2>/dev/null || echo \"NO_LAUNCH_JSON\")",
       "Bash(mkdir -p /Users/delilacruz/Hackathon/.claude && ls /Users/delilacruz/Hackathon/.claude)",
       "Bash(node --check src/lockedChoice.js)",
-      "Bash(node --check /Users/delilacruz/Hackathon/src/render.js)"
+      "Bash(node --check /Users/delilacruz/Hackathon/src/render.js)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
