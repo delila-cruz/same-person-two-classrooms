@@ -20,7 +20,16 @@
       "Bash(mkdir -p /Users/delilacruz/Hackathon/.claude && ls /Users/delilacruz/Hackathon/.claude)",
       "Bash(node --check src/lockedChoice.js)",
       "Bash(node --check /Users/delilacruz/Hackathon/src/render.js)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(gh auth *)",
+      "Bash(vercel whoami *)",
+      "Bash(brew install *)",
+      "Bash(jobs -l)",
+      "Bash(gh repo *)",
+      "Bash(npx vercel *)",
+      "Bash(curl -s https://same-person-two-classrooms.vercel.app/)",
+      "Bash(curl -s https://same-person-two-classrooms.vercel.app/src/scenes.js)",
+      "Bash(curl -sI https://same-person-two-classrooms.vercel.app/style.css)"
     ]
   }
 }
