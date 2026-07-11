@@ -55,17 +55,17 @@ export const SCENES = [
     type: 'lockedChoice',
     left: {
       prompt:
-        "Years later: a denial letter arrived today, the kind full of code numbers and no plain " +
-        "reason. You open the same AI tool everyone uses now and start typing.",
+        "Years later: the coffee maker finally gives out, mid-brew, on a Tuesday. You open the " +
+        "same AI shopping assistant everyone uses now and start typing.",
       options: [
         {
           text:
-            "\"Rewrite this so it reads as a formal insurance appeal: cites the denial code, states " +
-            "the specific medical necessity, and requests a written response within 30 days.\"",
+            "\"I need a drip coffee maker under $60 that brews a full pot in under 10 minutes and " +
+            "has a permanent filter — can you find a few options and compare them?\"",
           locked: false,
         },
         {
-          text: "\"Help me write an appeal letter for a denied claim.\"",
+          text: "\"Help me find a coffee maker.\"",
           locked: false,
         },
       ],
@@ -74,17 +74,17 @@ export const SCENES = [
     },
     right: {
       prompt:
-        "Years later: a denial letter arrived today, the kind full of code numbers and no plain " +
-        "reason. You open the same AI tool everyone uses now and start typing.",
+        "Years later: the coffee maker finally gives out, mid-brew, on a Tuesday. You open the " +
+        "same AI shopping assistant everyone uses now and start typing.",
       options: [
         {
           text:
-            "\"Rewrite this so it reads as a formal insurance appeal: cites the denial code, states " +
-            "the specific medical necessity, and requests a written response within 30 days.\"",
+            "\"I need a drip coffee maker under $60 that brews a full pot in under 10 minutes and " +
+            "has a permanent filter — can you find a few options and compare them?\"",
           locked: true,
         },
         {
-          text: "\"Can you fix this letter for me.\"",
+          text: "\"Can you help me pick a coffee maker.\"",
           locked: false,
         },
       ],
@@ -92,14 +92,14 @@ export const SCENES = [
       resultWeak: null,
     },
     resultGood:
-      "\"Here is your appeal, structured for a claims reviewer: it names the denial code (CO-50, " +
-      "'not medically necessary'), attaches your physician's clinical rationale, cites the specific " +
-      "policy clause covering this treatment, and requests a determination in writing within 30 " +
-      "days, as required under your plan's appeals timeline.\"",
+      "\"Here are three under $60 with permanent filters and sub-10-minute brew times: the " +
+      "Hamilton Beach FlexBrew ($44, 12-cup, 4.4 stars), the BLACK+DECKER 12-Cup ($35, 4.2 stars), " +
+      "and the Mr. Coffee Simple Brew ($30, 4.3 stars, fastest brew time of the three). Want a " +
+      "closer comparison on any of them?\"",
     resultWeak:
-      "\"Here is a general letter you can send: 'I am writing to appeal a decision made about my " +
-      "claim. I believe this decision was made in error and I would like it reviewed again. Please " +
-      "let me know if you need anything else from me. Thank you for your time.'\"",
+      "\"There are a lot of coffee makers out there — drip, single-serve, French press, and more. " +
+      "Popular brands include Hamilton Beach, Mr. Coffee, and Keurig. Let me know if you'd like more " +
+      "specific recommendations!\"",
   },
 
   {
