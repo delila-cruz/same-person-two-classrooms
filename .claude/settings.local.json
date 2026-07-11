@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "Bash(gh api *)",
+      "Bash(find /Users/delilacruz/.claude/plugins/cache/devpost-curriculum/hackathon-in-a-plugin -iname \"*.md\" | grep -i \"skill\\\\|prd-guide\\\\|prd-template\")",
+      "Bash(git init *)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
