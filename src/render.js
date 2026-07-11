@@ -4,6 +4,7 @@
 // scene types can gate/rebind it without touching main.js.
 
 import { SCENES } from './scenes.js';
+import { renderOptions } from './lockedChoice.js';
 
 const stage = document.getElementById('stage');
 
@@ -37,6 +38,8 @@ export function renderScene(index) {
     renderNarrationScene(scene);
   } else if (scene.type === 'staggeredNarration') {
     renderStaggeredNarrationScene(scene);
+  } else if (scene.type === 'lockedChoice') {
+    renderLockedChoiceScene(scene);
   } else {
     // Fail loudly rather than silently rendering a blank panel —
     // easier to catch during a fast build than a silent visual bug.
@@ -100,6 +103,57 @@ function renderStaggeredNarrationScene(scene) {
     bothPanelsShown = true;
     setNextEnabled(true);
   }, staggerDelayMs);
+}
+
+// ---- lockedChoice -------------------------------------------------------
+
+function renderLockedChoiceScene(scene) {
+  const { grid, left, right } = createTwoPanelGrid();
+
+  appendParagraphs(left, scene.left.prompt);
+  const leftOptions = document.createElement('div');
+  leftOptions.className = 'options';
+  left.appendChild(leftOptions);
+
+  appendParagraphs(right, scene.right.prompt);
+  const rightOptions = document.createElement('div');
+  rightOptions.className = 'options';
+  right.appendChild(rightOptions);
+
+  stage.appendChild(grid);
+  stage.appendChild(createNextButton('Next'));
+  setNextEnabled(false);
+
+  // In this dataset, each side only truly has one meaningfully "good" path:
+  // - Left: both options are unlocked. The specific/structured prompt (index 0)
+  //   is the skilled one -> resultGood. The vague one (index 1) -> resultWeak.
+  // - Right: the skilled option is locked, so the only pickable option is
+  //   always the vague one -> resultWeak, regardless of which option object
+  //   ends up being picked.
+  const leftGoodText = scene.left.options[0].text;
+
+  let leftShown = false;
+  let rightShown = false;
+
+  function maybeEnableNext() {
+    if (leftShown && rightShown) {
+      setNextEnabled(true);
+    }
+  }
+
+  renderOptions(leftOptions, scene.left.options, (picked) => {
+    const resultText = picked.text === leftGoodText ? scene.resultGood : scene.resultWeak;
+    appendParagraphs(left, resultText);
+    leftShown = true;
+    maybeEnableNext();
+  });
+
+  renderOptions(rightOptions, scene.right.options, () => {
+    // The only pickable option on the right is always the weaker one.
+    appendParagraphs(right, scene.resultWeak);
+    rightShown = true;
+    maybeEnableNext();
+  });
 }
 
 // ---- shared helpers -----------------------------------------------------
